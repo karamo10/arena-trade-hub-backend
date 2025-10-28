@@ -15,7 +15,7 @@ export function authenticateToken(req, res, next) {
 
 
 export function authorizeAdmin(req, res, next) {
-    if (req.user.role !== "admin") {
+    if (req.user.role !== "user") {
         return res.status(403).json({error: "admin only"})
     }
     next();

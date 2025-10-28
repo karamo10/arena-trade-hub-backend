@@ -2,10 +2,41 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pool from '../db.js';
+import { authenticateToken, authorizeAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Register
+// Creating admin
+// router.post('/create-admin', authorizeAdmin, authenticateToken, async (req, res) => {
+//   try {
+//     const { name, email, password } = req.body;
+
+//     const userExists = await pool.query(
+//       `SELECT * FROM users WHERE email = $1`,
+//       [email]
+//     );
+//     if (userExists.rows.length === 0) {
+//       return res.status(400).json({ message: 'User already exists' });
+//     }
+
+//     const salt = await bcrypt.genSalt(10);
+//     const hashPassword = await bcrypt.hash(password, salt);
+
+//     const newAdmin = await pool.query(
+//       `INSERT INTO users (name, email, password, role)
+//       VALUES ($1, $2, $3, $4) RETURNING *`,
+//       [name, email, hashPassword, 'admin']
+//     );
+
+//     res.status(201).json({ admin: newAdmin.rows[0] });
+
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Server error')
+//   }
+// })
+
+// Registering user 
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -35,7 +66,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
+// User login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -59,7 +90,16 @@ router.post('/login', async (req, res) => {
           { expiresIn: "1h" }
       );
 
-      res.json({token})
+    // Sending token + user but password is excluded
+    res.json({
+      token,
+      user: {
+        id: user.rows[0].id,
+        name: user.rows[0].name,
+        email: user.rows[0].email,
+        role: user.rows[0].role
+        }
+      })
       
 
   } catch (err) {
