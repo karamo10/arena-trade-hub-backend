@@ -2,44 +2,14 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pool from '../db.js';
-import { authenticateToken, authorizeAdmin } from '../middleware/auth.js';
+// import { authenticateToken, authorizeAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
-
-// Creating admin
-// router.post('/create-admin', authorizeAdmin, authenticateToken, async (req, res) => {
-//   try {
-//     const { name, email, password } = req.body;
-
-//     const userExists = await pool.query(
-//       `SELECT * FROM users WHERE email = $1`,
-//       [email]
-//     );
-//     if (userExists.rows.length === 0) {
-//       return res.status(400).json({ message: 'User already exists' });
-//     }
-
-//     const salt = await bcrypt.genSalt(10);
-//     const hashPassword = await bcrypt.hash(password, salt);
-
-//     const newAdmin = await pool.query(
-//       `INSERT INTO users (name, email, password, role)
-//       VALUES ($1, $2, $3, $4) RETURNING *`,
-//       [name, email, hashPassword, 'admin']
-//     );
-
-//     res.status(201).json({ admin: newAdmin.rows[0] });
-
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).send('Server error')
-//   }
-// })
 
 // Registering user 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
 
     // Check if user already exists
     const userExists = await pool.query(
@@ -56,8 +26,8 @@ router.post('/register', async (req, res) => {
 
     // Inserting the user
     const newUser = await pool.query(
-      'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *',
-      [name, email, hashPassword, role || 'user']
+      `NSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, 'user') RETURNING *`,
+      [name, email, hashPassword]
     );
     res.status(201).json({ user: newUser.rows[0] });
   } catch (err) {

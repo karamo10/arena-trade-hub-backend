@@ -1,22 +1,25 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
 export function authenticateToken(req, res, next) {
-    const authHeader = req.headers["authorization"]; 
-    const token = authHeader && authHeader.split(" ")[1];
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
-    if (!token) return res.sendStatus(401);
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.sendStatus(403);
-        req.user = user;
-        next();
-    });
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(401).json({ error: 'Token expired or invalid' });
+    }
+    req.user = user;
+    next();
+  });
 }
 
-
 export function authorizeAdmin(req, res, next) {
-    if (req.user.role !== "user") {
-        return res.status(403).json({error: "admin only"})
-    }
-    next();
-} 
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'admin only' });
+  }
+  next();
+}
