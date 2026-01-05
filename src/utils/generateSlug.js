@@ -1,5 +1,5 @@
 import slugify from "slugify";
-import pool from "../db.js";
+import pool from "../config/database.js";
 
 
 export default async function generateUniqueSlug(name) {
