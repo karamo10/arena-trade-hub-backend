@@ -4,11 +4,8 @@ import jwt from 'jsonwebtoken';
 
 const registerUser = async (req, res) => {
   try {
-    // frontend send a POST req {"username": "Doe", "email": "doe@gmail.com", "password": "doe123"}
-    // to the this API /api/users/register
-    // req.body contains the register data from the frontend
     const { username, email, password } = req.body;
-    // and extracts username, email and password
+
 
     console.log('Request body:', req.body);
 
@@ -76,17 +73,15 @@ const loginUser = async (req, res) => {
     if (!comparePassword) {
       return res.status(400).json({ message: 'Invalid credential!' });
     }
-    // if Not Match, login fails and return 400 message invalid credentials
-    // if Match proceed...
+    
 
     // if user exists and verify by the server, then it creates a token
     const token = jwt.sign(
-      { id: user.rows[0].id, role: user.rows[0].role }, // payload the data inside the Token(id, and user.role['user' || 'admin'])
-      process.env.JWT_SECRET, // geting the jwt secret key from .env file, and use to sign the token
+      { id: user.rows[0].id, role: user.rows[0].role }, 
+      process.env.JWT_SECRET, 
       { expiresIn: '1hr' } // token valid for one 1h, after that user must log in again
     );
-    // the user with id Y and role Z is authenticated to have access to this particular route or perform this task!
-
+   
     // server sends (token + user info without password) to client
     res.status(200).json({
       token,

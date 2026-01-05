@@ -15,8 +15,4 @@ router.post('/', authenticateToken, authorizeAdmin, upload.single('image'), addP
 router.patch('/:id', authenticateToken, authorizeAdmin, upload.single('image'), updateProduct);
 router.delete('/:id', authenticateToken, authorizeAdmin, deleteProduct);
 
-// router.route('/getProducts').get(getProducts);
-// router.route('/getProducts/:id').get(getProductById);
-// router.route('/getProducts:slug').get(getProductBySlug);
-
 export default router;
