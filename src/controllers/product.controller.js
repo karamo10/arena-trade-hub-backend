@@ -6,21 +6,21 @@ import streamifier from 'streamifier';
 const getProducts = async (req, res) => {
   try {
     const { categories, q } = req.query;
-    let result;
+    let products;
 
     if (q) {
-      result = await pool.query(`SELECT * FROM products WHERE slug ILIKE $1`, [
+      products = await pool.query(`SELECT * FROM products WHERE slug ILIKE $1`, [
         `%${q}%`,
       ]);
     } else if (categories) {
-      result = await pool.query(
+      products = await pool.query(  
         `SELECT * FROM products WHERE categories = $1`,
         [categories]
       );
     } else {
-      result = await pool.query(`SELECT * FROM products`);
+      products = await pool.query(`SELECT * FROM products`);
     }
-    return res.json(result.rows);
+    return res.json(products.rows);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: err.message });
