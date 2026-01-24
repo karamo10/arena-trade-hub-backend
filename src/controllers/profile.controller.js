@@ -1,12 +1,13 @@
 import pool from '../config/database.js';
 import cloudinary from '../utils/cloudinary.js';
 
-const getProfile = async (req, res) => {
+// enpoint to get all the user data
+const getFullProfile = async (req, res) => {
   try {
     const userId = req.user.id;
 
     const result = await pool.query(
-      'SELECT id, name, email, address, whatsapp_number, image FROM users WHERE id = $1',
+      'SELECT id, first_name, last_name, email,  address, whatsapp_number, image FROM users WHERE id = $1',
       [userId],
     );
 
@@ -17,12 +18,36 @@ const getProfile = async (req, res) => {
   }
 };
 
+// enpoint to get only user first_name, image, email
+const getBasicProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await pool.query(
+      `SELECT first_name, image, email FROM users WHERE id = $1`,
+      [userId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: 'user not found',
+      });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// enpoint to get only user first_name, last_name, email
 const getReadOnlyProfile = async (req, res) => {
   try {
     const userId = req.user.id;
 
     const result = await pool.query(
-      `SELECT id, first_name, image, email FROM users WHERE id = $1`,
+      `SELECT id, first_name, last_name, email FROM users WHERE id = $1`,
       [userId],
     );
 
@@ -76,7 +101,7 @@ const updateProfile = async (req, res) => {
   }
 };
 
-export { getProfile, getReadOnlyProfile, updateProfile };
+export { getFullProfile, getBasicProfile, getReadOnlyProfile, updateProfile };
 
 // 4 functions:
 // getProfile: Get full profile info for authenticated user

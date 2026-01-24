@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import upload from '../utils/mutler.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
-import { getProfile, getReadOnlyProfile, updateProfile } from '../controllers/profile.controller.js';
+import { getFullProfile, getBasicProfile, getReadOnlyProfile, updateProfile } from '../controllers/profile.controller.js';
 
 const router = Router();
 
-router.get('/', getProfile);
+router.get('/', getFullProfile);
+router.get('/basic', authenticateToken, getBasicProfile);
 router.get('/readonly', authenticateToken, getReadOnlyProfile); 
 router.patch('/', authenticateToken, upload.single('image'), updateProfile);
 
