@@ -6,10 +6,29 @@ const getProfile = async (req, res) => {
     const userId = req.user.id;
 
     const result = await pool.query(
-      'SELECT id, name, email, address, whatsapp_number, image FROM users WHERE id=$1'
-      ,
-      [userId]
+      'SELECT id, name, email, address, whatsapp_number, image FROM users WHERE id = $1',
+      [userId],
     );
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const getReadOnlyProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await pool.query(
+      `SELECT id, first_name, image, email FROM users WHERE id = $1`,
+      [userId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     res.json(result.rows[0]);
   } catch (err) {
@@ -34,7 +53,7 @@ const updateProfile = async (req, res) => {
           (error, result) => {
             if (error) reject(error);
             else resolve(result);
-          }
+          },
         );
 
         streamifier.createReadStream(req.file.buffer).pipe(stream);
@@ -47,7 +66,7 @@ const updateProfile = async (req, res) => {
             SET address = $1, whatsapp_number = $2, image = $3
             WHERE id = $4
             RETURNING id, name, email, role, address, whatsapp_number, image`,
-      [address || null, whatsapp_number || null, image || null, userId]
+      [address || null, whatsapp_number || null, image || null, userId],
     );
 
     res.json({ message: 'Profile updated!' });
@@ -57,4 +76,10 @@ const updateProfile = async (req, res) => {
   }
 };
 
-export { getProfile, updateProfile };
+export { getProfile, getReadOnlyProfile, updateProfile };
+
+// 4 functions:
+// getProfile: Get full profile info for authenticated user
+// getBasicProfile: Get basic profile info for any user by ID
+// getReadOnlyProfile: Get limited profile info for authenticated user (Form)
+// updateProfile: Update profile info and image for authenticated user

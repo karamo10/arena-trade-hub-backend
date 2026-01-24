@@ -4,13 +4,13 @@ import jwt from 'jsonwebtoken';
 
 const registerUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { first_name, last_name, email, password } = req.body;
 
 
-    console.log('Request body:', req.body);
+    console.log('Request body no:', req.body);
 
     // basic validation
-    if (!username || !email || !password) {
+    if (!first_name || !last_name || !email || !password) {
       return res.status(400).json({ message: 'All fields are required!' });
     }
 
@@ -29,16 +29,17 @@ const registerUser = async (req, res) => {
 
     // register user
     const user = await pool.query(
-      `INSERT INTO  users (name, email, password, role) 
-       VALUES( $1, $2, $3, 'user' ) RETURNING *`, // setting role to user by default
-      [username, email, hashedPassword]
+      `INSERT INTO  users (first_name, last_name, email, password, role) 
+       VALUES( $1, $2, $3, $4, 'user' ) RETURNING *`, // setting role to user by default
+      [first_name, last_name, email, hashedPassword]
     );
 
     res.status(201).json({
       message: 'User registered!',
       users: {
         id: user.rows[0].id,
-        name: user.rows[0].name,
+        first_name: user.rows[0].first_name,
+        last_name: user.rows[0].last_name,
         email: user.rows[0].email,
         password: user.rows[0].password,
         role: user.rows[0].role,
