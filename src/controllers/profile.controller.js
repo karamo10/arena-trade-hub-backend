@@ -7,7 +7,7 @@ const getFullProfile = async (req, res) => {
     const userId = req.user.id;
 
     const result = await pool.query(
-      'SELECT id, first_name, last_name, email,  address, whatsapp_number, image FROM users WHERE id = $1',
+      'SELECT id, first_name, last_name, email, address, street_address, phone_number, image FROM users WHERE id = $1',
       [userId],
     );
 
