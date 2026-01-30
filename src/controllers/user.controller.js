@@ -13,7 +13,7 @@ const getUsers = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const userId = parseInt(req.params.id, 10);
-    console.log(req.params.id);
+    // console.log(req.params.id);
     const { role } = req.body;
 
     if (isNaN(userId)) {
@@ -29,7 +29,7 @@ const updateUser = async (req, res) => {
     if (req.user.id === userId) {
       return res
         .status(403)
-        .json({ message: 'You cannot change your own role' });
+        .json({ message: 'Sorry you cannot change your own role' });
     }
 
     const result = await pool.query(

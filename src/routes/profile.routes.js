@@ -5,10 +5,10 @@ import { getFullProfile, getBasicProfile, getReadOnlyProfile, updateProfile } fr
 
 const router = Router();
 
-router.get('/', getFullProfile);
+router.get('/', authenticateToken, getFullProfile);
 router.get('/basic', authenticateToken, getBasicProfile);
 router.get('/readonly', authenticateToken, getReadOnlyProfile); 
-router.patch('/', authenticateToken, upload.single('image'), updateProfile);
+router.patch('/update', authenticateToken, upload.single('image'), updateProfile);
 
 export default router;
 

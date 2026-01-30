@@ -66,7 +66,7 @@ const updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const { address, whatsapp_number } = req.body;
+    const { first_name, last_name, address, street_address, phone_number } = req.body;
 
     let image = null;
     if (req.file) {
@@ -88,10 +88,23 @@ const updateProfile = async (req, res) => {
 
     const result = await pool.query(
       `UPDATE users
-            SET address = $1, whatsapp_number = $2, image = $3
-            WHERE id = $4
-            RETURNING id, name, email, role, address, whatsapp_number, image`,
-      [address || null, whatsapp_number || null, image || null, userId],
+            SET first_name = $1,
+            last_name = $2,
+            address = $3,
+            street_address = $4,
+            phone_number = $5,
+            image = $6
+            WHERE id = $7
+            RETURNING id, first_name, last_name, address, street_address, phone_number, image`,
+      [
+        first_name ?? null,
+        last_name ?? null,
+        address ?? null,
+        phone_number ?? null,
+        street_address ?? null,
+        image ?? null,
+        userId,
+      ],
     );
 
     res.json({ message: 'Profile updated!' });
