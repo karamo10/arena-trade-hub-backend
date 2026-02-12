@@ -1,7 +1,8 @@
 import pool from '../config/database.js';
 import generateUniqueSlug from '../utils/generateSlug.js';
-import cloudinary from '../utils/cloudinary.js';
-import streamifier from 'streamifier';
+import { uploadToCloudinary } from '../utils/uploadToCloudinary.js';
+// import cloudinary from '../config/cloudinary.js';
+// import streamifier from 'streamifier';
 
 const getProducts = async (req, res) => {
   try {
@@ -9,13 +10,14 @@ const getProducts = async (req, res) => {
     let products;
 
     if (q) {
-      products = await pool.query(`SELECT * FROM products WHERE slug ILIKE $1`, [
-        `%${q}%`,
-      ]);
+      products = await pool.query(
+        `SELECT * FROM products WHERE slug ILIKE $1`,
+        [`%${q}%`],
+      );
     } else if (categories) {
-      products = await pool.query(  
+      products = await pool.query(
         `SELECT * FROM products WHERE categories = $1`,
-        [categories]
+        [categories],
       );
     } else {
       products = await pool.query(`SELECT * FROM products`);
@@ -67,28 +69,30 @@ const getProductBySlug = async (req, res) => {
   }
 };
 
-
 const addProduct = async (req, res) => {
   try {
     const { name, price, categories, description, instock } = req.body;
 
     let image_url = null;
     if (req.file) {
-      // Upload to Cloudinary using stream
-      const result = await new Promise((resolve, reject) => {
-        let stream = cloudinary.uploader.upload_stream(
-          { folder: 'products' },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
-      });
-
+      // Upload to Cloudinary
+      const result = await uploadToCloudinary(req.file.buffer, 'products');
       image_url = result.secure_url;
     }
+    // const result = await new Promise((resolve, reject) => {
+    //   let stream = cloudinary.uploader.upload_stream(
+    //     { folder: 'products' },
+    //     (error, result) => {
+    //       if (error) reject(error);
+    //       else resolve(result);
+    //     }
+    //   );
+
+    //   streamifier.createReadStream(req.file.buffer).pipe(stream);
+    // });
+
+    //   image_url = result.secure_url;
+    // }
 
     if (!name) {
       return res.status(400).json({ message: 'product name is required' });
@@ -119,7 +123,7 @@ const addProduct = async (req, res) => {
         categories || 'general',
         defaultDescription,
         instock ?? true,
-      ]
+      ],
     );
     res.status(201).json({ message: 'New product added!' });
   } catch (err) {
@@ -140,7 +144,7 @@ const updateProduct = async (req, res) => {
     // Check if product exist
     const productCheck = await pool.query(
       `SELECT * FROM products WHERE id = $1`,
-      [id]
+      [id],
     );
     if (productCheck.rows.length === 0) {
       return res.status(404).json({ message: 'product not found' });
@@ -148,16 +152,7 @@ const updateProduct = async (req, res) => {
 
     let image_url = productCheck.rows[0].image_url;
     if (req.file) {
-      const result = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: 'products' },
-          (err, result) => {
-            if (err) reject(err);
-            else resolve(result);
-          }
-        );
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
-      });
+      const result = await uploadToCloudinary(req.file.buffer, "products");
       image_url = result.secure_url;
     }
 
@@ -189,7 +184,7 @@ const updateProduct = async (req, res) => {
         categories ?? productCheck.rows[0].categories,
         instock ?? productCheck.rows[0].instock,
         id,
-      ]
+      ],
     );
 
     res.json({
@@ -209,7 +204,7 @@ const deleteProduct = async (req, res) => {
     }
     const result = await pool.query(
       `DELETE FROM products WHERE id = $1 RETURNING *`,
-      [id]
+      [id],
     );
 
     if (result.rows.length === 0) {

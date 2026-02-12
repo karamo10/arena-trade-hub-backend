@@ -1,5 +1,7 @@
 import pool from '../config/database.js';
-import cloudinary from '../utils/cloudinary.js';
+import { uploadToCloudinary } from '../utils/uploadToCloudinary.js';
+// import cloudinary from '../config/cloudinary.js';
+// import streamifier from 'streamifier';
 
 // enpoint to get all the user data
 const getFullProfile = async (req, res) => {
@@ -70,21 +72,26 @@ const updateProfile = async (req, res) => {
 
     let image = null;
     if (req.file) {
-      const result = await Promise((resolve, reject) => {
-        let stream = cloudinary.uploader.upload_stream(
-          {
-            folder: 'arena_users_profile',
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          },
-        );
+      const result = await uploadToCloudinary(req.file.buffer, "arena_users_profile");
 
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
-      });
       image = result.secure_url;
     }
+    // if (req.file) {
+    //   const result = await new Promise((resolve, reject) => {
+    //     let stream = cloudinary.uploader.upload_stream(
+    //       {
+    //         folder: 'arena_users_profile',
+    //       },
+    //       (error, result) => {
+    //         if (error) reject(error);
+    //         else resolve(result);
+    //       },
+    //     );
+
+    //     streamifier.createReadStream(req.file.buffer).pipe(stream);
+    //   });
+    //   image = result.secure_url;
+    // }
 
     const result = await pool.query(
       `UPDATE users
