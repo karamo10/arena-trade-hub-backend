@@ -2,7 +2,7 @@ import pool from '../config/database.js';
 
 const getUsers = async (req, res) => {
   try {
-    const users = await pool.query('SELECT id, name, email, role FROM users');
+    const users = await pool.query('SELECT id, first_name, email, role FROM users');
     res.json(users.rows);
   } catch (err) {
     console.error(err);
