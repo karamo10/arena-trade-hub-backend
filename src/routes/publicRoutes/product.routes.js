@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authenticateToken, authorizeAdmin } from '../middleware/auth.middleware.js';
-import { getProductById, getProducts, getProductBySlug, addProduct, updateProduct, deleteProduct } from '../controllers/product.controller.js'
-import upload from "../utils/mutler.js";
+import { authenticateToken, authorizeAdmin } from '../../middleware/auth.middleware.js';
+import { getProductById, getProducts, getProductBySlug, addProduct, updateProduct, deleteProduct } from '../../controllers/publicController/product.controller.js';
+import upload from "../../utils/mutler.js";
 
 const router = Router();
 

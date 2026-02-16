@@ -1,9 +1,24 @@
-import pool from '../config/database.js';
+import pool from '../../config/database.js';
 
 const getUsers = async (req, res) => {
   try {
-    const users = await pool.query('SELECT id, first_name, email, role FROM users');
-    res.json(users.rows);
+    const { q } = req.query;
+
+    let users;
+
+    if (q) {
+      users = await pool.query(
+        `SELECT * FROM users WHERE first_name ILIKE $1`,
+        [`%${q}%`],
+      );
+    } else {
+      users = await pool.query(`SELECT id, first_name, email, role FROM users`);
+    }
+    return res.json(users.rows);
+    // const users = await pool.query(
+    //   'SELECT id, first_name, email, role FROM users',
+    // );
+    // res.json(users.rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });
@@ -37,7 +52,7 @@ const updateUser = async (req, res) => {
            SET role = $1
            WHERE id = $2
            RETURNING id, name, email, role`,
-      [role, userId]
+      [role, userId],
     );
 
     res.json({
@@ -47,6 +62,22 @@ const updateUser = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });
+  }
+};
+
+// count users
+const totalUsers = async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT COUNT(*) AS total_users FROM users',
+    );
+
+    const totalUser = result.rows[0].total_users;
+
+    res.json({ totalUser });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ messge: err.message });
   }
 };
 

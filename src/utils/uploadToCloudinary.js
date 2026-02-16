@@ -18,3 +18,5 @@ export const uploadToCloudinary = (fileBuffer, folder = 'arena_uploads') => {
     streamifier.createReadStream(fileBuffer).pipe(stream);
   });
 };
+
+export default uploadToCloudinary

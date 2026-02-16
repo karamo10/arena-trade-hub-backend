@@ -1,5 +1,5 @@
-import pool from '../config/database.js';
-import { uploadToCloudinary } from '../utils/uploadToCloudinary.js';
+import pool from '../../config/database.js';
+import uploadToCloudinary from '../../utils/uploadToCloudinary.js';
 // import cloudinary from '../config/cloudinary.js';
 // import streamifier from 'streamifier';
 
