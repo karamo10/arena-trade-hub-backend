@@ -12,7 +12,8 @@ export const uploadToCloudinary = (fileBuffer, folder = 'arena_uploads') => {
         folder,
         transformation: [
           { width: 500, crop: 'limit' },
-          { quality: 'auto', fetch_format: 'auto' },
+          { quality: 'auto'},
+          { fetch_format: 'auto' }
         ],
       },
       (error, result) => {
