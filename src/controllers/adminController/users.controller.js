@@ -15,10 +15,7 @@ const getUsers = async (req, res) => {
       users = await pool.query(`SELECT id, first_name, email, role FROM users`);
     }
     return res.json(users.rows);
-    // const users = await pool.query(
-    //   'SELECT id, first_name, email, role FROM users',
-    // );
-    // res.json(users.rows);
+   
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });

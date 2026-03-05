@@ -70,7 +70,7 @@ const loginUser = async (req, res) => {
       password,
       user.rows[0].password
     );
-    // bcrypt compare the plain text password from the User to user.rows[0].password from db
+    // bcrypt compare the password
     if (!comparePassword) {
       return res.status(400).json({ message: 'Invalid credential!' });
     }
