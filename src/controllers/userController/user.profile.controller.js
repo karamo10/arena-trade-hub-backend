@@ -71,6 +71,7 @@ const updateProfile = async (req, res) => {
     const { first_name, last_name, address, street_address, phone_number } = req.body;
 
     let image = null;
+    console.log("Cloudinary name", process.env.CLOUDINARY_CLOUD_NAME);
     if (req.file) {
       const result = await uploadToCloudinary(req.file.buffer, "arena_users_profile");
 
