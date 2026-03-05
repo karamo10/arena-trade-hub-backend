@@ -8,15 +8,21 @@ export const uploadToCloudinary = (fileBuffer, folder = 'arena_uploads') => {
     }
 
     const stream = cloudinary.uploader.upload_stream(
-      { folder },
+      {
+        folder,
+        transformation: [
+          { width: 500, crop: 'limit' },
+          { quality: 'auto', fetch_format: 'auto' },
+        ],
+      },
       (error, result) => {
         if (error) return reject(error);
         resolve(result);
-      }
+      },
     );
 
     streamifier.createReadStream(fileBuffer).pipe(stream);
   });
 };
 
-export default uploadToCloudinary
+export default uploadToCloudinary;
