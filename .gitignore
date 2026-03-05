@@ -79,6 +79,9 @@ web_modules/
 .parcel-cache
 # seed
 seed
+
+# debug log
+debug.js
 # Next.js build output
 .next
 out
@@ -118,4 +121,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# End of https://mrkandreev.name/snippets/gitignore-generator/#Node
+
+
