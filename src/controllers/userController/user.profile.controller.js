@@ -76,6 +76,7 @@ const updateProfile = async (req, res) => {
 
       image = result.secure_url;
     }
+
     // if (req.file) {
     //   const result = await new Promise((resolve, reject) => {
     //     let stream = cloudinary.uploader.upload_stream(
@@ -107,9 +108,9 @@ const updateProfile = async (req, res) => {
         first_name ?? null,
         last_name ?? null,
         address ?? null,
-        phone_number ?? null,
         street_address ?? null,
-        image ?? null,
+        phone_number ?? null,
+        image ?? null, // Only update image if a new one is provided
         userId,
       ],
     );
